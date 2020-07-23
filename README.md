@@ -8,7 +8,8 @@ Steps to run `parse-messages.py`:
   - A list of directories containing your downloaded Facebook data. (If the data is large enough, Facebook will provide multiple folders.) Each directory should include subdirectories like `inbox`, `stickers_used`, etc...
   
   For example:
-  ```python parse-messages.py 'Weizhen Sheng' 6 messages_2016-2020-1 messages_2016-2020-2
+  ```
+  python parse-messages.py 'Weizhen Sheng' 6 messages_2016-2020-1 messages_2016-2020-2
   ```
   
   where my Facebook messaging data for 2016-2020 is stored in two separate directories.
