@@ -7,8 +7,9 @@ import sys
 from datetime import datetime
 from matplotlib import pyplot as plt
 
-################################################################################
-################################################################################
+# ==============================================================================
+# Contact class
+# ==============================================================================
 
 class Contact():
 	def __init__(self, name):
@@ -22,6 +23,7 @@ class Contact():
 		# variables for dataframes
 		self.df_dicts = [] # list of dictionaries to construct dataframe later
 		self.df = pd.DataFrame()
+		self.agg_df = pd.DataFrame()
 
 	def update_groups(self, chat_name):
 		self.group_chats.add(chat_name)
@@ -36,7 +38,7 @@ class Contact():
 		self.ind_messages = self.total_messages - self.group_messages
 		self.num_groups = len(self.group_chats)
 
-	def graph_by_month(self):
+	def make_timeseries_df(self):
 		df = self.df
 		df['date'] = pd.to_datetime(df.date)
 		df = df.sort_values(by='date')
@@ -51,20 +53,46 @@ class Contact():
 		# join dataframes
 		agg_df = pd.merge(ind_df,group_df, on = 'month', how = 'outer').reset_index()
 		agg_df = agg_df.fillna(0)
-		agg_df.columns = ['month','ind_messages','group_messages']
-		agg_df['all_messages'] = agg_df['ind_messages'] + agg_df['group_messages']
+		agg_df.columns = ['month','1:1','group']
+		agg_df['total'] = agg_df['1:1'] + agg_df['group']
 		agg_df = agg_df.sort_values('month', ascending=True)
 		agg_df = agg_df.set_index('month')
 
+		self.agg_df = agg_df
+
+	def graph_by_month(self):
+		self.make_timeseries_df()
+
 		# draw graph
-		agg_df.plot(color = ['springgreen','deepskyblue','salmon'])
-		plt.legend(['1:1','Group','Total'])
+		self.agg_df.plot(color = ['springgreen','deepskyblue','salmon'])
+		# plt.legend(['1:1','Group','Total'])
 		plt.title(self.name)
-		plt.xticks(range(len(agg_df.index)), agg_df.index, rotation=90)
+		plt.xticks(range(len(self.agg_df.index)), self.agg_df.index, rotation=90)
 		plt.ylabel('Number of messages')
 		plt.ylim(ymin = 0.0)
 		plt.tight_layout()
 		plt.show()
+
+	def get_stats(self):
+		stats = 'Total messages:\t\t' + "{:,}".format(self.total_messages) \
+				+ '\n1:1 messages:\t\t' + "{:,}".format(self.ind_messages) \
+				+ '\nGroup messages:\t\t' + "{:,}".format(self.group_messages) \
+				+ '\nGroup chats:\t\t' + "{:,}".format(self.num_groups)
+		return stats
+
+	def get_solo_stats(self, n):
+		stats = 'Total messages:\t\t' + "{:,}".format(self.total_messages) \
+				+ '\n1:1 messages:\t\t' + "{:,}".format(self.ind_messages) \
+				+ '\nGroup messages:\t\t' + "{:,}".format(self.group_messages) \
+				+ '\nGroup chats:\t\t' + "{:,}".format(self.num_groups) \
+				+ '\nUnique people messaged:\t' + str(n)				
+		return stats
+
+	def get_group_chats(self):
+		gcs = ''
+		for gc in self.group_chats:
+			gcs += '  - ' + gc + '\n'
+		return gcs
 
 	def print_stats(self):
 		print('\n' + self.name)
@@ -78,8 +106,9 @@ class Contact():
 			print('  - ' + gc)
 
 
-################################################################################
-################################################################################
+# ==============================================================================
+# helper functions
+# ==============================================================================
 
 def iter_directory(directory, chat_limit, contacts):
 	print(directory)
@@ -143,8 +172,9 @@ def parse_chat(chat_name, data, contacts):
 			contact.add_df_dict(row_dict)
 
 
-################################################################################
-################################################################################
+# ==============================================================================
+# terminal program
+# ==============================================================================
 
 if __name__ == '__main__':
 	self_name = sys.argv[1]
@@ -191,7 +221,7 @@ if __name__ == '__main__':
 	# prompt for input to display detailed stats of a contact
 	print('\n============================================')
 	is_running = True
-	input_text = raw_input('\nEnter a name for detailed stats:\n')
+	input_text = input('\nEnter a name for detailed stats:\n')
 	while is_running:
 		if input_text in contacts:
 			input_contact = contacts[input_text]
@@ -202,6 +232,6 @@ if __name__ == '__main__':
 			print('Invalid name :(')
 
 		continue_text = '\nEnter another name, or type q if you\'re done:\n'
-		input_text = raw_input(continue_text)
+		input_text = input(continue_text)
 		is_running = False if (input_text == 'q') else True
 
