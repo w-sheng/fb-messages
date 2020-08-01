@@ -1,0 +1,19 @@
+body {
+  background-color: #B4D2ED;
+  margin-top: 15%;
+}
+
+h1 {
+  font-family: 'Questrial';
+  font-size: 34pt;
+  color: white;
+  text-align: center;
+}
+
+.content {
+	font-family: 'Lato';
+	font-size: 14pt;
+	color: #4D4D4D;
+	width: 45%;
+	margin: auto;
+}

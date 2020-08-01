@@ -13,8 +13,7 @@ from matplotlib.figure import Figure
 
 # tkinter set-up
 window = Tk()
-# window.geometry('700x700')
-window.title('Facebook Messaging - Data Analytics')
+window.title('Messenger Analytics')
 style = ttk.Style()
 style.configure('.', bg='white')
 style.configure('TNotebook.Tab', bg='white')
@@ -273,9 +272,11 @@ def analyze():
 		txt_top.insert(INSERT, top10)
 
 		# ALL TAB
+		j = 1
 		all_ppl = 'Number of people messaged: ' + str(len(contacts) - 1) + '\n\n'
 		for (_,c) in sorted_contacts[1:]:
-			all_ppl += '  - ' + c.name + ':\t\t\t' + "{:,}".format(c.total_messages) + '\n'
+			all_ppl += str(j) + '. ' + c.name + '\t\t\t' + "{:,}".format(c.total_messages) + '\n'
+			j += 1
 		txt_all.delete('1.0', END)
 		txt_all.insert(INSERT, all_ppl)
 
