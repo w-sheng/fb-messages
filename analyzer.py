@@ -65,7 +65,6 @@ class Contact():
 
 		# draw graph
 		self.agg_df.plot(color = ['springgreen','deepskyblue','salmon'])
-		# plt.legend(['1:1','Group','Total'])
 		plt.title(self.name)
 		plt.xticks(range(len(self.agg_df.index)), self.agg_df.index, rotation=90)
 		plt.ylabel('Number of messages')
